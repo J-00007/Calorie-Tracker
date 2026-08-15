@@ -8,8 +8,8 @@ import os
 # -----------------------------------------------------------------------------
 # In a production MNC environment, we load credentials securely. 
 # For local testing, set this in your terminal: export GEMINI_API_KEY="your_key"
-API_KEY = os.environ.get("GEMINI_API_KEY", "YOUR_DEFAULT_API_KEY_HERE")
-genai.configure(API_KEY = os.environ.get("GEMINI_API_KEY"))_
+API_KEY = os.environ.get("GEMINI_API_KEY")
+genai.configure(api_key=API_KEY)
 # Using Gemini 3.6 Flash as it is lightning fast for both text and image processing
 MODEL_NAME = 'gemini-3.6-flash' 
 
