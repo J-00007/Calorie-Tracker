@@ -86,12 +86,12 @@ def main():
                     result = analyze_meal(img, is_image=True)
                     st.success(result)
 
-    # Method 2: Upload Image
+# Method 2: Upload Image
     with tab2:
         uploaded_file = st.file_uploader("Upload an image of your meal", type=["jpg", "jpeg", "png"])
-        st.image(img, caption="Uploaded Meal", use_container_width=True)
+        if uploaded_file is not None:
             img = Image.open(uploaded_file)
-            st.image(img, caption="Uploaded Meal", use_column_width=True)
+            st.image(img, caption="Uploaded Meal", use_container_width=True)
             
             if st.button("Calculate Calories", key="btn_upload"):
                 with st.spinner("Analyzing spices and ingredients..."):
