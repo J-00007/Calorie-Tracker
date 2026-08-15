@@ -69,7 +69,17 @@ def main():
         camera_photo = st.camera_input("Take a picture of your meal")
         if camera_photo is not None:
             img = Image.open(camera_photo)
-          st.image(img, caption="Scanned Meal", use_container_width=True)
+         # Method 1: Scan Food (Uses Device Camera)
+    with tab1:
+        camera_photo = st.camera_input("Take a picture of your meal")
+        if camera_photo is not None:
+            img = Image.open(camera_photo)
+            st.image(img, caption="Scanned Meal", use_container_width=True)
+            
+            if st.button("Calculate Calories", key="btn_scan"):
+                with st.spinner("Analyzing spices and ingredients..."):
+                    result = analyze_meal(img, is_image=True)
+                    st.success(result)
             
             if st.button("Calculate Calories", key="btn_scan"):
                 with st.spinner("Analyzing spices and ingredients..."):
