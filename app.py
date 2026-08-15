@@ -69,7 +69,7 @@ def main():
         camera_photo = st.camera_input("Take a picture of your meal")
         if camera_photo is not None:
             img = Image.open(camera_photo)
-            st.image(img, caption="Scanned Meal", use_column_width=True)
+          st.image(img, caption="Scanned Meal", use_container_width=True)
             
             if st.button("Calculate Calories", key="btn_scan"):
                 with st.spinner("Analyzing spices and ingredients..."):
@@ -79,7 +79,7 @@ def main():
     # Method 2: Upload Image
     with tab2:
         uploaded_file = st.file_uploader("Upload an image of your meal", type=["jpg", "jpeg", "png"])
-        if uploaded_file is not None:
+        st.image(img, caption="Uploaded Meal", use_container_width=True)
             img = Image.open(uploaded_file)
             st.image(img, caption="Uploaded Meal", use_column_width=True)
             
