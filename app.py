@@ -71,7 +71,7 @@ def main():
             img = Image.open(camera_photo)
          # Method 1: Scan Food (Uses Device Camera)
     with tab1:
-        camera_photo = st.camera_input("Take a picture of your meal")
+       camera_photo = st.camera_input("Take a picture of your meal", key="camera_1")
         if camera_photo is not None:
             img = Image.open(camera_photo)
             st.image(img, caption="Scanned Meal", use_container_width=True)
