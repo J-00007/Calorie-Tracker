@@ -64,12 +64,7 @@ def main():
     # UI Tabs for the three requested input methods
     tab1, tab2, tab3 = st.tabs(["📸 Scan Food", "📁 Upload Image", "✍️ Describe Meal"])
     
-    # Method 1: Scan Food (Uses Device Camera)
-    with tab1:
-        camera_photo = st.camera_input("Take a picture of your meal")
-        if camera_photo is not None:
-            img = Image.open(camera_photo)
-         # Method 1: Scan Food (Uses Device Camera)
+        # Method 1: Scan Food (Uses Device Camera)
     with tab1:
        with tab1:
         camera_photo = st.camera_input("Take a picture of your meal", key="camera_1")
