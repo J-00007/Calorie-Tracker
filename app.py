@@ -380,7 +380,7 @@ def main() -> None:
 if __name__ == "__main__":
     main()
 # Method 2: Upload Image
-    with tab2:
+    with tab:
         uploaded_file = st.file_uploader("Upload an image of your meal", type=["jpg", "jpeg", "png"])
         if uploaded_file is not None:
             img = Image.open(uploaded_file)
