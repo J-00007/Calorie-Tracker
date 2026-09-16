@@ -380,17 +380,20 @@ def main() -> None:
 if __name__ == "__main__":
     main()
 # Method 2: Upload Image
-    with tab:
-        uploaded_file = st.file_uploader("Upload an image of your meal", type=["jpg", "jpeg", "png"])
+   def main():
+    # ... your existing code ...
+    
+    # Method 2: Upload Image
+    with tab2:  # Or your specific tab variable
+        uploaded_file = st.file_uploader("Upload an image of your meal")
         if uploaded_file is not None:
             img = Image.open(uploaded_file)
             st.image(img, caption="Uploaded Meal", use_container_width=True)
-            
+
             if st.button("Calculate Calories", key="btn_upload"):
                 with st.spinner("Analyzing spices and ingredients..."):
                     result = analyze_meal(img, is_image=True)
                     st.success(result)
-
     # Method 3: Describe Meal (Text Input)
     with tab3:
         meal_description = st.text_input("Describe your meal", placeholder="e.g., 2 Idlis and Coconut chutney")
