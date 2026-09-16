@@ -379,11 +379,7 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-# Method 2: Upload Image
-   def main():
-    # ... your existing code ...
-    
-    # Method 2: Upload Image
+   # Method 2: Upload Image
     with tab2:  # Or your specific tab variable
         uploaded_file = st.file_uploader("Upload an image of your meal")
         if uploaded_file is not None:
