@@ -306,7 +306,7 @@ def render_result(result: dict) -> None:
     )
 
 
-def main() -> tab1, tab2, tab3 = st.tabs(["Take Photo", "Upload Image", "Describe Meal"])
+def main(): 
     inject_css()
 
     st.markdown(
