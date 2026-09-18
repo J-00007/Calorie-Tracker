@@ -64,9 +64,6 @@ card. Wire your real analysis logic into `analyze_meal()` — everything
 else (UI, styling, state handling) is ready to go.
 """
 
-import streamlit as st
-from PIL import Image
-
 st.set_page_config(
     page_title="Indian Cuisine Calorie Tracker",
     page_icon="🍛",
@@ -247,59 +244,32 @@ def inject_css() -> None:
     )
 
 
-# ----------------------------------------------------------------------
-# Analysis — replace the body of this function with your real logic
-# (vision-language model call, nutrition database lookup, etc). Keep
-# the same input signature and return shape and the UI needs no changes.
-# ----------------------------------------------------------------------
-def analyze_meal(meal_input, is_image: bool) -> dict:
-    """
-    Args:
-        meal_input: a PIL.Image (when is_image=True) or a description string.
-        is_image: whether meal_input is a photo or typed text.
-
-    Returns:
-        {
-            "dish_name": str,
-            "calories": int,
-            "protein_g": float,
-            "carbs_g": float,
-            "fat_g": float,
-            "notes": str,
-        }
-    """
-    # --- placeholder result so the UI is runnable end to end ---
-    return {
-        "dish_name": "Paneer Butter Masala with Rice" if is_image else str(meal_input).strip().title(),
-        "calories": 540,
-        "protein_g": 18.5,
-        "carbs_g": 62,
-        "fat_g": 24,
-        "notes": "Estimate based on a standard restaurant-style serving.",
-    }
-
-
 def render_result(result: dict) -> None:
+    # Adding a fallback check in case result is just a string (from the GenAI error block)
+    if isinstance(result, str):
+        st.error(result)
+        return
+        
     st.markdown(
         f"""
         <div class="result-card">
-          <div class="result-dish">{result['dish_name']}</div>
-          <div class="result-calories">{result['calories']}<span>kcal</span></div>
+          <div class="result-dish">{result.get('dish_name', 'Analyzed Meal')}</div>
+          <div class="result-calories">{result.get('calories', 'N/A')}<span>kcal</span></div>
           <div class="macro-row">
             <div class="macro protein">
               <span class="macro-label">Protein</span>
-              <span class="macro-value">{result['protein_g']} g</span>
+              <span class="macro-value">{result.get('protein_g', 0)} g</span>
             </div>
             <div class="macro carbs">
               <span class="macro-label">Carbs</span>
-              <span class="macro-value">{result['carbs_g']} g</span>
+              <span class="macro-value">{result.get('carbs_g', 0)} g</span>
             </div>
             <div class="macro fat">
               <span class="macro-label">Fat</span>
-              <span class="macro-value">{result['fat_g']} g</span>
+              <span class="macro-value">{result.get('fat_g', 0)} g</span>
             </div>
           </div>
-          <div class="result-notes">{result['notes']}</div>
+          <div class="result-notes">{result.get('notes', '')}</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -376,31 +346,6 @@ def main():
         unsafe_allow_html=True,
     )
 
-
-if __name__ == "__main__":
-    main()
-   # Method 2: Upload Image
-    with tab2:
-        uploaded_file = st.file_uploader("Upload an image of your meal")
-        if uploaded_file is not None:
-            img = Image.open(uploaded_file)
-            st.image(img, caption="Uploaded Meal", use_container_width=True)
-
-            if st.button("Calculate Calories", key="btn_upload"):
-                with st.spinner("Analyzing spices and ingredients..."):
-                    result = analyze_meal(img, is_image=True)
-                    st.success(result)
-    # Method 3: Describe Meal (Text Input)
-    with tab3:
-        meal_description = st.text_input("Describe your meal", placeholder="e.g., 2 Idlis and Coconut chutney")
-        
-        if st.button("Calculate Calories", key="btn_text"):
-            if meal_description.strip() == "":
-                st.warning("Please enter a meal description.")
-            else:
-                with st.spinner("Calculating..."):
-                    result = analyze_meal(meal_description, is_image=False)
-                    st.success(result)
 
 if __name__ == "__main__":
     main()
