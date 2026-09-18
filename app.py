@@ -12,9 +12,6 @@ import re
 API_KEY = os.environ.get("GEMINI_API_KEY") 
 genai.configure(api_key=API_KEY)
 
-# Updated to 'latest' to resolve the 404 error on Streamlit Cloud
-MODEL_NAME = 'gemini-3.6-flash' 
-
 HISTORY_FILE = "meal_history.json"
 
 # -----------------------------------------------------------------------------
@@ -39,7 +36,7 @@ def save_history(username, meal_desc, result_dict):
         "meal": meal_desc,
         "result": result_dict
     }
-    history[username].insert(0, entry) # Add newest entry to the top
+    history[username].insert(0, entry)
     
     with open(HISTORY_FILE, "w") as f:
         json.dump(history, f, indent=4)
@@ -48,8 +45,6 @@ def save_history(username, meal_desc, result_dict):
 # 3. Core Logic Engine
 # -----------------------------------------------------------------------------
 def analyze_meal(input_data, is_image=False):
-    model = genai.GenerativeModel(MODEL_NAME)
-    
     system_prompt = """
     You are an expert calorie counter specializing in Indian Cuisine. 
     Analyze the provided food.
@@ -67,13 +62,15 @@ def analyze_meal(input_data, is_image=False):
     """
     
     try:
+        # Using legacy models to prevent 404 errors on older Streamlit Cloud SDKs
         if is_image:
+            model = genai.GenerativeModel('gemini-pro-vision')
             response = model.generate_content([system_prompt, input_data])
         else:
+            model = genai.GenerativeModel('gemini-pro')
             text_payload = f"User meal description: {input_data}"
             response = model.generate_content([system_prompt, text_payload])
             
-        # Robustly extract JSON even if the AI adds markdown blocks
         raw_text = response.text.strip()
         clean_json = re.sub(r'```(?:json)?\n?(.*?)\n?```', r'\1', raw_text, flags=re.DOTALL).strip()
         return json.loads(clean_json)
@@ -120,17 +117,14 @@ def login_screen():
                 st.error("Please enter both a username and password.")
 
 def main(): 
-    # Session State Initialization
     if 'logged_in' not in st.session_state:
         st.session_state['logged_in'] = False
         st.session_state['username'] = ""
 
-    # Route to Login if not authenticated
     if not st.session_state['logged_in']:
         login_screen()
         return
 
-    # Sidebar: History & Logout
     with st.sidebar:
         st.write(f"### 👋 Welcome, {st.session_state['username']}")
         if st.button("Logout"):
@@ -145,12 +139,11 @@ def main():
         if not user_history:
             st.info("No meals tracked yet.")
         else:
-            for item in user_history[:5]: # Show last 5 entries
+            for item in user_history[:5]:
                 st.markdown(f"**{item['result'].get('dish_name', 'Meal')}**")
                 st.caption(f"{item['timestamp']} • {item['result'].get('total_calories', 'N/A')} kcal")
                 st.divider()
 
-    # Main App Layout
     st.title("🍛 Indian Cuisine Calorie Tracker")
     st.write("Scan a plate, upload a photo, or describe your meal.")
 
