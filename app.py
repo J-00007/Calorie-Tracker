@@ -13,7 +13,7 @@ API_KEY = os.environ.get("GEMINI_API_KEY")
 genai.configure(api_key=API_KEY)
 
 # Updated to 'latest' to resolve the 404 error on Streamlit Cloud
-MODEL_NAME = 'gemini-1.5-flash-latest' 
+MODEL_NAME = 'gemini-3.6-flash' 
 
 HISTORY_FILE = "meal_history.json"
 
