@@ -6,16 +6,20 @@ import json
 import datetime
 import re
 
+# -----------------------------------------------------------------------------
 # 1. Configuration & Setup
+# -----------------------------------------------------------------------------
 API_KEY = os.environ.get("GEMINI_API_KEY") 
 genai.configure(api_key=API_KEY)
 
-# AI Model 
+# AI Model
 MODEL_NAME = 'gemini-3.6-flash' 
 
 HISTORY_FILE = "meal_history.json"
 
-# 2. History & Authentication Helpers
+# -----------------------------------------------------------------------------
+# 2. History & Auth Helpers
+# -----------------------------------------------------------------------------
 def load_history():
     if os.path.exists(HISTORY_FILE):
         with open(HISTORY_FILE, "r") as f:
@@ -35,19 +39,19 @@ def save_history(username, meal_desc, result_dict):
         "meal": meal_desc,
         "result": result_dict
     }
-    history[username].insert(0, entry) 
+    history[username].insert(0, entry) # Add newest entry to the top
     
     with open(HISTORY_FILE, "w") as f:
         json.dump(history, f, indent=4)
 
 # -----------------------------------------------------------------------------
 # 3. Core Logic Engine
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 def analyze_meal(input_data, is_image=False):
     model = genai.GenerativeModel(MODEL_NAME)
     
     system_prompt = """
-    You are an expert calorie counter specializing in Indian Cuisine with decades of experience. 
+    You are an expert calorie counter specializing in Indian Cuisine. 
     Analyze the provided food.
     
     Strict Rules:
@@ -69,8 +73,8 @@ def analyze_meal(input_data, is_image=False):
             text_payload = f"User meal description: {input_data}"
             response = model.generate_content([system_prompt, text_payload])
             
-      
-     raw_text = response.text.strip()
+        # Extract JSON even if the AI adds markdown blocks
+        raw_text = response.text.strip()
         clean_json = re.sub(r'```(?:json)?\n?(.*?)\n?```', r'\1', raw_text, flags=re.DOTALL).strip()
         return json.loads(clean_json)
         
@@ -81,7 +85,9 @@ def analyze_meal(input_data, is_image=False):
             "breakdown": f"Raw Response:\n{response.text if 'response' in locals() else str(e)}"
         }
 
-# 4. Streamlit User Interface:
+# -----------------------------------------------------------------------------
+# 4. Streamlit User Interface
+# -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="Indian Cuisine Calorie Tracker",
     page_icon="🍛",
@@ -139,7 +145,7 @@ def main():
         if not user_history:
             st.info("No meals tracked yet.")
         else:
-            for item in user_history[:5]:
+            for item in user_history[:5]: # Show last 5 entries
                 st.markdown(f"**{item['result'].get('dish_name', 'Meal')}**")
                 st.caption(f"{item['timestamp']} • {item['result'].get('total_calories', 'N/A')} kcal")
                 st.divider()
@@ -178,4 +184,3 @@ def main():
 
 if __name__ == "__main__":
     main()
- 
