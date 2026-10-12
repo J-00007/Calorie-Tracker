@@ -18,28 +18,28 @@ MODEL_NAME = 'gemini-3.6-flash'
 HISTORY_FILE = "meal_history.json"
 
 # -----------------------------------------------------------------------------
-# 2. History & Auth Helpers
+# 2. History Helpers (Simplified for single-user/global view)
 # -----------------------------------------------------------------------------
 def load_history():
     if os.path.exists(HISTORY_FILE):
         with open(HISTORY_FILE, "r") as f:
             try:
-                return json.load(f)
+                data = json.load(f)
+                # Ensure it returns a list (handles previous dict-based format if needed)
+                return data if isinstance(data, list) else []
             except json.JSONDecodeError:
-                return {}
-    return {}
+                return []
+    return []
 
-def save_history(username, meal_desc, result_dict):
+def save_history(meal_desc, result_dict):
     history = load_history()
-    if username not in history:
-        history[username] = []
     
     entry = {
         "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
         "meal": meal_desc,
         "result": result_dict
     }
-    history[username].insert(0, entry) # Add newest entry to the top
+    history.insert(0, entry) # Add newest entry to the top
     
     with open(HISTORY_FILE, "w") as f:
         json.dump(history, f, indent=4)
@@ -102,50 +102,16 @@ def render_result(result: dict) -> None:
     with st.expander("View Calorie Breakdown", expanded=True):
         st.markdown(result.get('breakdown', 'No breakdown available.'))
 
-def login_screen():
-    st.title("🍛 Tracker Login")
-    st.write("Please sign in to view and save your calorie history.")
-    
-    with st.form("login_form"):
-        user = st.text_input("Username", placeholder="e.g. rahul_99")
-        pw = st.text_input("Password", type="password")
-        submitted = st.form_submit_button("Login")
-        
-        if submitted:
-            if user.strip() and pw.strip():
-                st.session_state['logged_in'] = True
-                st.session_state['username'] = user.strip()
-                st.rerun()
-            else:
-                st.error("Please enter both a username and password.")
-
 def main(): 
-    # Session State Initialization
-    if 'logged_in' not in st.session_state:
-        st.session_state['logged_in'] = False
-        st.session_state['username'] = ""
-
-    # Route to Login if not authenticated
-    if not st.session_state['logged_in']:
-        login_screen()
-        return
-
-    # Sidebar: History & Logout
+    # Sidebar: History
     with st.sidebar:
-        st.write(f"### 👋 Welcome, {st.session_state['username']}")
-        if st.button("Logout"):
-            st.session_state['logged_in'] = False
-            st.session_state['username'] = ""
-            st.rerun()
-            
-        st.divider()
         st.write("### 🕒 Recent History")
-        user_history = load_history().get(st.session_state['username'], [])
+        history = load_history()
         
-        if not user_history:
+        if not history:
             st.info("No meals tracked yet.")
         else:
-            for item in user_history[:5]: # Show last 5 entries
+            for item in history[:10]: # Show last 10 entries
                 st.markdown(f"**{item['result'].get('dish_name', 'Meal')}**")
                 st.caption(f"{item['timestamp']} • {item['result'].get('total_calories', 'N/A')} kcal")
                 st.divider()
@@ -162,7 +128,7 @@ def main():
             img = Image.open(camera_photo)
             with st.spinner("Analyzing ingredients..."):
                 result = analyze_meal(img, is_image=True)
-                save_history(st.session_state['username'], "Camera Scan", result)
+                save_history("Camera Scan", result)
             render_result(result)
 
     with tab2:
@@ -171,7 +137,7 @@ def main():
             img = Image.open(uploaded_file)
             with st.spinner("Analyzing ingredients..."):
                 result = analyze_meal(img, is_image=True)
-                save_history(st.session_state['username'], "Image Upload", result)
+                save_history("Image Upload", result)
             render_result(result)
 
     with tab3:
@@ -179,7 +145,7 @@ def main():
         if st.button("Calculate from Text", type="primary", disabled=not meal_text.strip()):
             with st.spinner("Analyzing ingredients..."):
                 result = analyze_meal(meal_text, is_image=False)
-                save_history(st.session_state['username'], meal_text, result)
+                save_history(meal_text, result)
             render_result(result)
 
 if __name__ == "__main__":
