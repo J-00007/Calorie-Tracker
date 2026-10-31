@@ -1,0 +1,105 @@
+[
+  {
+    "name": "Sign in and save a quick Indian meal",
+    "sanity": true,
+    "viewport": "desktop",
+    "covers": [
+      "account sign-in and session restoration",
+      "quick-add Indian meal",
+      "meal creation",
+      "user-scoped persistent diary",
+      "daily calorie and macro summary"
+    ],
+    "description": "Verifies an authenticated user can add a standard Indian meal and find the saved entry after a reload.",
+    "steps": [
+      "Sign in or create an account using one of the available sign-in methods",
+      "On Overview, use Quick add to add Idli + sambar",
+      "Confirm the meal appears in Recently logged and the daily totals update",
+      "Reload the page and confirm the meal is still present"
+    ],
+    "expected": "Idli + sambar appears in the signed-in user's diary after reload and the daily nutrition totals include its estimate."
+  },
+  {
+    "name": "Analyse a meal from a written description",
+    "viewport": "desktop",
+    "covers": [
+      "text-based Indian food analysis",
+      "structured dish and portion estimates",
+      "calorie protein carbohydrate and sugar breakdown",
+      "nutrition confidence and assumptions"
+    ],
+    "description": "Verifies a written Indian meal description produces a visible nutrition estimate before it is saved.",
+    "steps": [
+      "Sign in and open Overview",
+      "Enter '2 medium idlis with 1 bowl of sambar and 1 tablespoon coconut chutney' in the meal description",
+      "Select Analyse nutrition",
+      "Review the estimated calories, protein, carbs, sugars, dish breakdown and assumptions"
+    ],
+    "expected": "A structured estimate appears with dish names, portions, all four nutrition values, a confidence label and recipe or portion assumptions."
+  },
+  {
+    "name": "Edit and permanently delete a food log",
+    "viewport": "desktop",
+    "covers": [
+      "meal history listing",
+      "meal nutrition editing",
+      "delete confirmation",
+      "record deletion",
+      "CRUD persistence after reload"
+    ],
+    "description": "Verifies users can amend saved nutrition values and remove a meal with a confirmation step.",
+    "setup": ["Sign in and use Quick add to create a Poha meal"],
+    "steps": [
+      "Open Food diary",
+      "Edit the Poha entry and change its calories to 275",
+      "Save changes and confirm the updated value is visible",
+      "Choose Delete for the Poha entry and confirm the deletion",
+      "Reload Food diary"
+    ],
+    "expected": "The edited value is saved, the confirmation removes the selected meal, and the deleted entry remains absent after reload."
+  },
+  {
+    "name": "Show a helpful error when meal analysis is unavailable",
+    "viewport": "desktop",
+    "covers": [
+      "AI analysis failure handling",
+      "user-visible API error feedback",
+      "retry after failed meal analysis"
+    ],
+    "description": "Verifies the analyser gives clear feedback when the analysis endpoint returns an error rather than silently losing the request.",
+    "qa_faults": [
+      {
+        "method": "POST",
+        "path": "/api/analyze",
+        "status": 502,
+        "body_json": {
+          "error": "simulated_failure"
+        }
+      }
+    ],
+    "steps": [
+      "Sign in and enter 'one bowl vegetable upma' in the meal description",
+      "Select Analyse nutrition while the analysis request is faulted"
+    ],
+    "expected": "A visible message explains that the estimate is temporarily unavailable and the user can retry after the service recovers."
+  },
+  {
+    "name": "Analyse a meal photo on a mobile viewport",
+    "viewport": "mobile",
+    "covers": [
+      "mobile responsive layout",
+      "camera capture interface",
+      "image file selection",
+      "client-side image resizing",
+      "photo-based Indian food analysis"
+    ],
+    "description": "Verifies the mobile photo workflow accepts a food image and returns an estimated nutrition breakdown.",
+    "steps": [
+      "Sign in and open Overview on the mobile viewport",
+      "Tap Take a meal photo and choose a clear food image from the device",
+      "Confirm a photo preview appears",
+      "Select Analyse nutrition"
+    ],
+    "expected": "The selected photo is previewed and the analysis result shows estimated calories, protein, carbs, sugars, dish components and confidence."
+  }
+]
