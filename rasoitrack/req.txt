@@ -1,0 +1,36 @@
+RasoiTrack dependency reference
+===============================
+
+Runtime
+-------
+Node.js: 20 or newer
+npm: 10 or newer
+
+Production dependencies
+-----------------------
+react@^19.0.0
+react-dom@^19.0.0
+lucide-react@^0.469.0
+
+Development dependencies
+------------------------
+@types/react@^19.0.0
+@types/react-dom@^19.0.0
+@vitejs/plugin-react@^4.3.0
+autoprefixer@^10.4.0
+postcss@^8.4.0
+tailwindcss@^3.4.0
+typescript@^5.7.0
+vite@^6.0.0
+
+Optional platform/build dependency
+----------------------------------
+@rollup/rollup-linux-x64-gnu@^4.0.0
+
+Installation
+------------
+Run "npm install" from this project directory. package.json is the authoritative
+manifest used by npm. This file is a human-readable reference and is not a
+Python pip requirements file.
+
+The AppDeploy platform provides its SDK/runtime integration.
